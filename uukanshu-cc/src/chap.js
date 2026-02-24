@@ -1,7 +1,25 @@
-var UA = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
-
 function execute(url) {
-    var doc = fetch(url, { headers: { "User-Agent": UA } }).html();
+    var BASE = "https://www.uukanshu.cc";
+    if (!url.startsWith("http")) url = BASE + url;
+
+    var doc = null;
+    try {
+        var response = fetch(url);
+        if (response.ok) {
+            var html = response.text();
+            if (html && html.length > 500) {
+                doc = Html.parse(html);
+            }
+        }
+    } catch (e) { }
+
+    if (!doc) {
+        var browser = Engine.newBrowser();
+        doc = browser.launch(url, 15000);
+        browser.close();
+    }
+
+    if (!doc) return Response.success("");
 
     doc.select(".ad_content").remove();
     doc.select("script").remove();
@@ -10,13 +28,12 @@ function execute(url) {
     var htm = doc.select("#read-content").html();
     if (!htm) htm = doc.select("#contentbox").html();
     if (!htm) htm = doc.select(".content").html();
+    if (!htm) htm = "";
 
-    if (htm) {
-        htm = htm.replace(/UUkanshu\.com/gi, "");
-        htm = htm.replace(/UU看書/gi, "");
-        htm = htm.replace(/uukanshu/gi, "");
-        htm = htm.replace(/&nbsp;/g, "");
-    }
+    htm = htm.replace(/UUkanshu\.com/gi, "");
+    htm = htm.replace(/UU看書/gi, "");
+    htm = htm.replace(/uukanshu/gi, "");
+    htm = htm.replace(/&nbsp;/g, "");
 
     return Response.success(htm);
 }

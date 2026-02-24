@@ -1,19 +1,34 @@
-var UA = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
-
 function execute(url) {
-    var doc = fetch(url, { headers: { "User-Agent": UA } }).html();
+    var BASE = "https://www.uukanshu.cc";
+    if (!url.startsWith("http")) url = BASE + url;
 
-    var name = doc.select(".booktitle").text();
-    if (!name) name = doc.select("h1").text();
+    var doc = null;
+    try {
+        var response = fetch(url);
+        if (response.ok) {
+            var html = response.text();
+            if (html && html.length > 500) {
+                doc = Html.parse(html);
+            }
+        }
+    } catch (e) { }
 
-    var cover = doc.select(".bookcover img").attr("src");
+    if (!doc) {
+        var browser = Engine.newBrowser();
+        doc = browser.launch(url, 15000);
+        browser.close();
+    }
+
+    if (!doc) return Response.success({ name: "", cover: "", author: "", description: "", detail: "", host: BASE });
+
+    var name = doc.select(".booktitle").text() || doc.select("h1").text() || "";
+    var cover = doc.select(".bookcover img").attr("src") || "";
     if (cover && cover.startsWith("//")) cover = "https:" + cover;
 
     var authorEl = doc.select(".booktag a").first();
     var author = authorEl ? authorEl.text().replace("作者：", "") : "";
 
-    var description = doc.select(".bookintro").text();
-    if (!description) description = doc.select(".book-intro dd").text();
+    var description = doc.select(".bookintro").text() || doc.select(".book-intro dd").text() || "";
 
     return Response.success({
         name: name,
@@ -21,6 +36,6 @@ function execute(url) {
         author: author,
         description: description,
         detail: "",
-        host: "https://www.uukanshu.cc"
+        host: BASE
     });
 }

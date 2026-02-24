@@ -1,19 +1,39 @@
-var UA = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
-
 function execute(url) {
-    var doc = fetch(url, { headers: { "User-Agent": UA } }).html();
+    var BASE = "https://www.uukanshu.cc";
+    if (!url.startsWith("http")) url = BASE + url;
+
+    var doc = null;
+    try {
+        var response = fetch(url);
+        if (response.ok) {
+            var html = response.text();
+            if (html && html.length > 500) {
+                doc = Html.parse(html);
+            }
+        }
+    } catch (e) { }
+
+    if (!doc) {
+        var browser = Engine.newBrowser();
+        doc = browser.launch(url, 15000);
+        browser.close();
+    }
+
+    if (!doc) return Response.success([]);
 
     var el = doc.select("#list-chapterAll dd a");
-    if (el.size() == 0) el = doc.select(".chapterlist dd a");
-    if (el.size() == 0) el = doc.select("dd a");
+    if (!el || el.size() == 0) el = doc.select(".chapterlist dd a");
+    if (!el || el.size() == 0) el = doc.select("dd a");
 
     var data = [];
     for (var i = 0; i < el.size(); i++) {
         var e = el.get(i);
+        var href = e.attr("href") || "";
+        if (!href.startsWith("http")) href = BASE + href;
         data.push({
-            name: e.text(),
-            url: e.attr("href"),
-            host: "https://www.uukanshu.cc"
+            name: e.text() || "",
+            url: href,
+            host: BASE
         });
     }
 
