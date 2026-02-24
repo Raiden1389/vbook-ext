@@ -11,7 +11,7 @@
             "version": 1,
             "source": "https://www.uukanshu.cc",
             "icon": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/uukanshu-cc/icon.png",
-            "description": "Đọc truyện trên uukanshu.cc",
+            "description": "uukanshu.cc chinese novel",
             "type": "chinese_novel",
             "locale": "zh_CN"
         }
