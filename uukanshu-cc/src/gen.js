@@ -2,15 +2,12 @@ function execute(url, page) {
     if (!page) page = '1';
     var fullUrl = "https://www.uukanshu.cc" + url.replace(/_\d+\.html$/, "_" + page + ".html");
 
-    var response = fetch(fullUrl, {
-        headers: {
-            "User-Agent": "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
-        }
-    });
+    var browser = Engine.newBrowser();
+    var doc = browser.launch(fullUrl, 15000);
+    browser.close();
 
-    if (!response.ok) return Response.success([], null);
+    if (!doc) return Response.success([], null);
 
-    var doc = response.html();
     var el = doc.select(".bookbox");
     var data = [];
 
