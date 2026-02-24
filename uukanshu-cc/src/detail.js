@@ -1,5 +1,6 @@
 function execute(url) {
     var BASE = "https://www.uukanshu.cc";
+    url = url.replace("://uukanshu.cc", "://www.uukanshu.cc");
     if (!url.startsWith("http")) url = BASE + url;
 
     var doc = null;

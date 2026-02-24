@@ -45,6 +45,7 @@ function execute(url, page) {
         var author = authorEl ? authorEl.text() : "";
 
         if (name && link) {
+            link = link.replace("://uukanshu.cc", "://www.uukanshu.cc");
             if (!link.startsWith("http")) link = BASE + link;
             data.push({
                 name: name,

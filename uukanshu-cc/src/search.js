@@ -22,6 +22,9 @@ function execute(key, page) {
         var author = authorEl ? authorEl.text() : "";
 
         if (name && link) {
+            // Normalize URL: ensure www prefix
+            link = link.replace("://uukanshu.cc", "://www.uukanshu.cc");
+            if (!link.startsWith("http")) link = "https://www.uukanshu.cc" + link;
             data.push({
                 name: name,
                 link: link,
