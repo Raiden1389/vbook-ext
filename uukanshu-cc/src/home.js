@@ -1,5 +1,3 @@
-load("config.js");
-
 function execute() {
     return Response.success([
         { title: "玄幻奇幻", input: "/class_1_1.html", script: "list.js" },
