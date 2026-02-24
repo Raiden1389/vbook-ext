@@ -1,12 +1,11 @@
+var UA = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
+
 function execute(url) {
-    var doc = Http.get(url).html();
+    var doc = fetch(url, { headers: { "User-Agent": UA } }).html();
 
     doc.select(".ad_content").remove();
     doc.select("script").remove();
     doc.select("style").remove();
-    doc.select(".read_btn").remove();
-    doc.select(".chapter_Turnpage").remove();
-    doc.select(".read-title").remove();
 
     var htm = doc.select("#read-content").html();
     if (!htm) htm = doc.select("#contentbox").html();
