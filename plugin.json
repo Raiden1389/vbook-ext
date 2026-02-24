@@ -1,18 +1,19 @@
 {
     "metadata": {
-        "name": "uukanshu_cc",
         "author": "Raiden",
-        "version": 1,
-        "source": "https://www.uukanshu.cc",
-        "regexp": "(www\\.)?uukanshu\\.cc/book/\\d+",
-        "description": "Đọc truyện trên uukanshu.cc",
-        "locale": "zh_CN",
-        "language": "javascript",
-        "type": "chinese_novel"
+        "description": "Raiden VBook Extensions"
     },
-    "script": {
-        "detail": "detail.js",
-        "toc": "toc.js",
-        "chap": "chap.js"
-    }
+    "data": [
+        {
+            "name": "uukanshu_cc",
+            "author": "Raiden",
+            "path": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/plugin.zip",
+            "version": 1,
+            "source": "https://www.uukanshu.cc",
+            "icon": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/icon.png",
+            "description": "Đọc truyện trên uukanshu.cc",
+            "type": "chinese_novel",
+            "locale": "zh_CN"
+        }
+    ]
 }
