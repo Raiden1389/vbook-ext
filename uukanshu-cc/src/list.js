@@ -1,55 +1,23 @@
-load("config.js");
-
 function execute(url, page) {
-    var HOST = "https://www.uukanshu.cc";
-    if (!page) page = "1";
+    if (!page) page = '1';
+    var fullUrl = "https://www.uukanshu.cc" + url.replace(/_\d+\.html$/, "_" + page + ".html");
 
-    // URL pattern: /class_1_1.html -> /class_1_{page}.html
-    var fullUrl = HOST + url.replace(/_\d+\.html$/, "_" + page + ".html");
+    var doc = Http.get(fullUrl).html();
+    var el = doc.select(".item");
+    var data = [];
 
-    var response = fetch(fullUrl, { headers: HEADERS });
-    if (response.ok) {
-        var doc = response.html();
-        var data = [];
-
-        var items = doc.select(".item");
-        for (var i = 0; i < items.size(); i++) {
-            var e = items.get(i);
-
-            var nameEl = e.select("a").first();
-            var name = nameEl ? nameEl.text() : "";
-            var link = nameEl ? nameEl.attr("href") : "";
-
-            if (link && link.startsWith("/")) {
-                link = HOST + link;
-            }
-
-            // Cover from og:image on detail page - skip here
-            var cover = "";
-
-            var desc = "";
-            var descEl = e.select("dd").last();
-            if (descEl) desc = descEl.text();
-
-            if (name && link) {
-                data.push({
-                    name: name,
-                    link: link,
-                    cover: cover,
-                    description: desc,
-                    host: HOST
-                });
-            }
-        }
-
-        // Next page
-        var nextPage = null;
-        var pageNum = parseInt(page);
-        if (data.length > 0) {
-            nextPage = (pageNum + 1).toString();
-        }
-
-        return Response.success(data, nextPage);
+    for (var i = 0; i < el.size(); i++) {
+        var e = el.get(i);
+        var nameEl = e.select("a").first();
+        data.push({
+            name: nameEl ? nameEl.text() : "",
+            link: nameEl ? nameEl.attr("href") : "",
+            cover: "",
+            description: e.select("dd").last() ? e.select("dd").last().text() : "",
+            host: "https://www.uukanshu.cc"
+        });
     }
-    return Response.success([], null);
+
+    var next = data.length > 0 ? (parseInt(page) + 1).toString() : null;
+    return Response.success(data, next);
 }
