@@ -1,7 +1,10 @@
 function execute(url) {
     var doc = Http.get(url).html();
 
-    var el = doc.select("dl dd a");
+    var el = doc.select("#list-chapterAll dd a");
+    if (el.size() == 0) el = doc.select(".chapterlist dd a");
+    if (el.size() == 0) el = doc.select("dd a");
+
     var data = [];
     for (var i = 0; i < el.size(); i++) {
         var e = el.get(i);

@@ -1,12 +1,24 @@
 function execute(url) {
     var doc = Http.get(url).html();
 
+    var name = doc.select(".booktitle").text();
+    if (!name) name = doc.select("h1").text();
+
+    var cover = doc.select(".bookcover img").attr("src");
+    if (cover && cover.startsWith("//")) cover = "https:" + cover;
+
+    var authorEl = doc.select(".booktag a").first();
+    var author = authorEl ? authorEl.text().replace("作者：", "") : "";
+
+    var description = doc.select(".bookintro").text();
+    if (!description) description = doc.select(".book-intro dd").text();
+
     return Response.success({
-        name: doc.select('meta[property="og:title"]').attr("content"),
-        cover: doc.select('meta[property="og:image"]').attr("content"),
-        author: doc.select('meta[property="og:novel:author"]').attr("content"),
-        description: doc.select('meta[property="og:description"]').attr("content"),
-        detail: doc.select('meta[property="og:novel:category"]').attr("content") + '<br>' + doc.select('meta[property="og:novel:status"]').attr("content"),
+        name: name,
+        cover: cover,
+        author: author,
+        description: description,
+        detail: "",
         host: "https://www.uukanshu.cc"
     });
 }
