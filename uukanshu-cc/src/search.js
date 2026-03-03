@@ -1,9 +1,8 @@
-var UA = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
-
 function execute(key, page) {
-    var response = fetch("https://www.uukanshu.cc/search", {
+    var BASE = "https://uukanshu.cc";
+
+    var response = fetch(BASE + "/search", {
         method: "POST",
-        headers: { "User-Agent": UA },
         body: { "searchkey": key, "searchtype": "all" }
     });
 
@@ -22,15 +21,13 @@ function execute(key, page) {
         var author = authorEl ? authorEl.text() : "";
 
         if (name && link) {
-            // Normalize URL: ensure www prefix
-            link = link.replace("://uukanshu.cc", "://www.uukanshu.cc");
-            if (!link.startsWith("http")) link = "https://www.uukanshu.cc" + link;
+            if (!link.startsWith("http")) link = BASE + link;
             data.push({
                 name: name,
                 link: link,
                 cover: "",
                 description: author,
-                host: "https://www.uukanshu.cc"
+                host: BASE
             });
         }
     }

@@ -1,29 +1,14 @@
 function execute(url) {
-    var BASE = "https://www.uukanshu.cc";
-    // Site migrated /book/ID → /b/ID/
-    url = url.replace(/\/book\/(\d+)/, "/b/$1/");
+    var BASE = "https://uukanshu.cc";
     if (!url.startsWith("http")) url = BASE + url;
 
-    var doc = null;
-    try {
-        var response = fetch(url);
-        if (response.ok) {
-            var html = response.text();
-            if (html && html.length > 500) {
-                doc = Html.parse(html);
-            }
-        }
-    } catch (e) { }
-
-    if (!doc) {
-        var browser = Engine.newBrowser();
-        doc = browser.launch(url, 15000);
-        browser.close();
-    }
+    var response = fetch(url + "/");
+    var doc = response.html();
 
     if (!doc) return Response.success([]);
 
-    var el = doc.select("#list-chapterAll dd a");
+    var el = doc.select("#list-chapterAll div dd a");
+    if (!el || el.size() == 0) el = doc.select("#list-chapterAll dd a");
     if (!el || el.size() == 0) el = doc.select(".chapterlist dd a");
     if (!el || el.size() == 0) el = doc.select("dd a");
 
