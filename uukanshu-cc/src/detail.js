@@ -1,6 +1,8 @@
 function execute(url) {
     var BASE = "https://www.uukanshu.cc";
     url = url.replace("://uukanshu.cc", "://www.uukanshu.cc");
+    // Site migrated /book/ID → /b/ID/
+    url = url.replace(/\/book\/(\d+)/, "/b/$1/");
     if (!url.startsWith("http")) url = BASE + url;
 
     var doc = null;

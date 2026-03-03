@@ -2,9 +2,9 @@
     "metadata": {
         "name": "uukanshu_cc",
         "author": "Raiden",
-        "version": 11,
+        "version": 12,
         "source": "https://www.uukanshu.cc",
-        "regexp": "(www\\.)?uukanshu\\.cc/book/\\d+",
+        "regexp": "(www\\.)?uukanshu\\.cc/(book|b)/\\d+",
         "description": "uukanshu.cc chinese novel",
         "locale": "zh_CN",
         "language": "javascript",
