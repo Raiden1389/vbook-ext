@@ -2,10 +2,10 @@
     "metadata": {
         "name": "uukanshu_cc",
         "author": "Raiden",
-        "version": 14,
+        "version": 15,
         "source": "https://www.uukanshu.cc",
         "regexp": "(www\\.)?uukanshu\\.cc/book/\\d+",
-        "description": "uukanshu.cc chinese novel",
+        "description": "đọc truyên",
         "locale": "zh_CN",
         "language": "javascript",
         "type": "chinese_novel"
@@ -17,5 +17,9 @@
         "toc": "toc.js",
         "chap": "chap.js",
         "search": "search.js"
+    },
+    "config": {
+        "thread_num": 1,
+        "delay": 3000
     }
 }
