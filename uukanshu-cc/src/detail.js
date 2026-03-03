@@ -15,12 +15,26 @@ function execute(url) {
 
     var description = info.select(".bookintro").text() || doc.select(".bookintro").text() || "";
 
+    // Genre tags + update time
+    var tag = doc.select(".booktag a").text() || "";
+    var booktag = doc.select(".booktag span");
+    for (var i = 0; i < booktag.size(); i++) {
+        tag += "<br>" + booktag.get(i).text();
+    }
+    var updateTime = info.select(".booktime").text() || doc.select(".booktime").text() || "";
+    var detail = tag;
+    if (updateTime) detail += "<br>" + updateTime;
+
     return Response.success({
         name: name,
         cover: cover,
         author: author,
         description: description,
-        detail: "",
-        host: BASE
+        detail: detail,
+        host: BASE,
+        url: url,
+        suggests: [
+            { title: "Cùng tác giả", input: "/modules/article/authorarticle.php?author=" + author, script: "suggest.js" }
+        ]
     });
 }
