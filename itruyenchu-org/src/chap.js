@@ -1,7 +1,7 @@
-load("libs.js");
+load("config.js");
 
 function execute(url) {
-    url = absoluteUrl(url);
+    url = normalizeUrl(url);
 
     var doc = fetch(url).html();
     if (!doc) return Response.success("");

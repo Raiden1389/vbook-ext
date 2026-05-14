@@ -1,10 +1,9 @@
-load("libs.js");
+load("config.js");
 
 function execute(url) {
-    url = absoluteUrl(url);
-
-    var response = fetch(url);
-    var doc = response.html();
+    url = normalizeUrl(url);
+    var slug = getSlug(url);
+    var doc = fetchDocument(url);
     if (!doc) {
         return Response.success({
             name: "",
@@ -17,13 +16,22 @@ function execute(url) {
     }
 
     var jsonLd = extractJsonLd(doc) || {};
-    var name = doc.select("h1").text() || jsonLd.name || "";
-    var cover = doc.select("meta[property=og:image]").attr("content") || jsonLd.image || "";
+    var name = cleanText(doc.select("h1").text()) || jsonLd.name || "";
+    var cover = doc.select("meta[property=og:image]").attr("content") || jsonLd.image || coverUrl(slug);
     var author = "";
     if (jsonLd.author && jsonLd.author.name) author = jsonLd.author.name;
 
     var description = jsonLd.description || "";
-    description = cleanText(description);
+    description = responseContent(description) || "";
+    var intro = doc.select("article p, .space-y-2 p, .h-72 p");
+    if (intro && intro.size() > 0) {
+        var parts = [];
+        for (var k = 0; k < intro.size(); k++) {
+            var text = cleanText(intro.get(k).text());
+            if (text) parts.push("<p>" + text + "</p>");
+        }
+        if (parts.length > 0) description = parts.join("");
+    }
 
     var tags = [];
     if (jsonLd.genre && jsonLd.genre.length) {
@@ -40,8 +48,9 @@ function execute(url) {
 
     var detail = "";
     if (tags.length) detail += tags.join("<br>");
-    if (jsonLd.numberOfChapters) {
-        detail += (detail ? "<br>" : "") + "Số chương: " + jsonLd.numberOfChapters;
+    var total = parseTotalChapters(doc, jsonLd);
+    if (total) {
+        detail += (detail ? "<br>" : "") + "Số chương: " + total;
     }
     if (jsonLd.dateModified) {
         detail += (detail ? "<br>" : "") + "Cập nhật: " + jsonLd.dateModified;
@@ -54,6 +63,7 @@ function execute(url) {
         description: description,
         detail: detail,
         host: BASE_URL,
-        url: url
+        url: url,
+        ongoing: true
     });
 }

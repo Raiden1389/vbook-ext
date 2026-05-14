@@ -1,25 +1,18 @@
-load("libs.js");
+load("config.js");
 
 function execute(input, page) {
-    var currentPage = page ? parseInt(page, 10) : 1;
-    if (!currentPage || currentPage < 1) currentPage = 1;
-
-    var config = { limit: 24 };
+    var current = page ? parseInt(page, 10) : 1;
+    if (!current || current < 1) current = 1;
+    var params = { page: current, limit: 24 };
     if (input === "latest") {
-        config.sortBy = "createdAt";
+        params.sort = "createdAt";
     } else if (input === "trending_now") {
-        config.sortBy = "totalViews";
-    } else if (input && input.indexOf("/the-loai/") === 0) {
-        config.category = input.split("/").pop();
+        params.sort = "totalViews";
+    } else if (input && input.indexOf("/the-loai/") !== -1) {
+        var parts = input.split("/");
+        params.categories = parts[parts.length - 1];
     }
-
-    var data = fetchBookList(config, page);
-    if (!data || !data.data) return Response.success([], null);
-
-    var books = [];
-    for (var i = 0; i < data.data.length; i++) {
-        books.push(toBookItem(data.data[i]));
-    }
-
-    return Response.success(books, nextPageToken(data, currentPage));
+    var json = fetchJson(apiBooksUrl(params));
+    if (!json) return Response.success([], null);
+    return Response.success(mapApiBooks(json), nextPage(json, current));
 }
