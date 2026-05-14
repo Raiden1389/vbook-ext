@@ -119,13 +119,13 @@ function extractJsonLd(doc) {
 function extractChapterPayload(raw) {
     if (!raw) return null;
 
-    var match = raw.match(/\\"chapters\\":\[(.*?)\],\\"bookSlug\\":\\"([^\\"]+)\\"/s);
+    var match = raw.match(/\\"chapters\\":\[([\s\S]*?)\],\\"bookSlug\\":\\"([^\\"]+)\\"/);
     if (!match) {
         var normalized = raw
             .replace(/\\"/g, '"')
             .replace(/\\\\u/g, "\\u")
             .replace(/\\\\/g, "\\");
-        match = normalized.match(/"chapters":\[(.*?)\],"bookSlug":"([^"]+)"/s);
+        match = normalized.match(/"chapters":\[([\s\S]*?)\],"bookSlug":"([^"]+)"/);
     }
     if (!match) return null;
 
