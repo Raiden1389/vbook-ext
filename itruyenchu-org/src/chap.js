@@ -350,12 +350,6 @@ function execute(url) {
         if (html) return Response.success(html);
     }
 
-    let vipResult = fetchVipContent(slug, chapter);
-    if (typeof vipResult === "string" && vipResult) return Response.success(vipResult);
-    if (vipResult && vipResult.debug) {
-        return Response.success("<p><i>VIP Debug: " + vipResult.debug + (vipResult.json ? " | JSON:" + vipResult.json.substring(0, 100) : "") + (vipResult.sample ? " | SAMPLE:" + vipResult.sample : "") + "</i></p>" + lockedMessage());
-    }
-
     response = authFetch(url);
     if (response.ok) {
         let doc = response.html();
@@ -375,6 +369,12 @@ function execute(url) {
             let content = extractChapterHtml(doc);
             if (content) return Response.success(content);
         }
+    }
+
+    let vipResult = fetchVipContent(slug, chapter);
+    if (typeof vipResult === "string" && vipResult) return Response.success(vipResult);
+    if (vipResult && vipResult.debug) {
+        return Response.success("<p><i>VIP Debug: " + vipResult.debug + (vipResult.json ? " | JSON:" + vipResult.json.substring(0, 100) : "") + (vipResult.sample ? " | SAMPLE:" + vipResult.sample : "") + "</i></p>" + lockedMessage());
     }
 
     return Response.success(lockedMessage());
