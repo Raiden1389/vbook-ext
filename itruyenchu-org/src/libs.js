@@ -35,59 +35,44 @@ function cleanText(str) {
         .trim();
 }
 
-function parseJsonInput(input) {
-    if (!input) return {};
-    if (typeof input !== "string") return input;
-    var raw = input.trim();
-    if (raw.charAt(0) === "{") {
-        try {
-            return JSON.parse(raw);
-        } catch (e) {}
-    }
-    if (raw.indexOf("/the-loai/") === 0) {
-        var pieces = raw.split("/");
-        return {
-            categories: [pieces[pieces.length - 1] || ""],
-            sortBy: "createdAt"
-        };
-    }
-    return {};
-}
-
-function postJson(path, payload) {
-    var response = fetch(API_BASE_URL + path, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        },
-        body: JSON.stringify(payload)
-    });
-
+function fetchJson(url) {
+    var response = fetch(url);
     if (!response || !response.ok) return null;
 
     try {
-        return JSON.parse(response.text());
+        return response.json();
     } catch (e) {
-        return null;
+        try {
+            return JSON.parse(response.text());
+        } catch (e2) {
+            return null;
+        }
     }
+}
+
+function apiBooksUrl(params) {
+    var query = [];
+    for (var key in params) {
+        if (params[key] !== null && params[key] !== undefined && params[key] !== "") {
+            query.push(key + "=" + encodeURIComponent(params[key]));
+        }
+    }
+    return API_BASE_URL + "/books" + (query.length ? "?" + query.join("&") : "");
 }
 
 function fetchBookList(config, page) {
     var pageNumber = parseInt(page || "1", 10);
     if (!pageNumber || pageNumber < 1) pageNumber = 1;
-
-    var categories = config.categories || [];
-    if (typeof categories === "string") categories = [categories];
-
-    return postJson("/books/search", {
-        categories: categories,
-        minChapter: config.minChapter || 0,
-        maxChapter: config.maxChapter || 99999,
-        sortBy: config.sortBy || "createdAt",
+    var params = {
         page: pageNumber,
-        search: config.search || ""
-    });
+        limit: config.limit || 24
+    };
+
+    if (config.sortBy) params.sort = config.sortBy;
+    if (config.search) params.title = config.search;
+    if (config.category) params.categories = config.category;
+
+    return fetchJson(apiBooksUrl(params));
 }
 
 function toBookItem(item) {
@@ -106,6 +91,14 @@ function toBookItem(item) {
         description: detail,
         host: BASE_URL
     };
+}
+
+function nextPageToken(json, page) {
+    var currentPage = parseInt(json && json.page ? json.page : page || "1", 10);
+    if (!currentPage || currentPage < 1) currentPage = 1;
+    return json && json.totalPages && currentPage < parseInt(json.totalPages, 10)
+        ? String(currentPage + 1)
+        : null;
 }
 
 function extractJsonLd(doc) {

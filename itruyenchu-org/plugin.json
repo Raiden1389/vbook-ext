@@ -2,7 +2,7 @@
     "metadata": {
         "name": "itruyenchu_org",
         "author": "Raiden",
-        "version": 1,
+        "version": 2,
         "source": "https://itruyenchu.org",
         "regexp": "(www\\.)?itruyenchu\\.org/truyen/[^/?#]+(?:/chuong-\\d+)?",
         "description": "itruyenchu.org vietnamese novel",

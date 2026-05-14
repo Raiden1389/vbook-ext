@@ -1,9 +1,19 @@
 load("libs.js");
 
 function execute(input, page) {
-    var config = parseJsonInput(input);
-    var data = fetchBookList(config, page);
+    var currentPage = page ? parseInt(page, 10) : 1;
+    if (!currentPage || currentPage < 1) currentPage = 1;
 
+    var config = { limit: 24 };
+    if (input === "latest") {
+        config.sortBy = "createdAt";
+    } else if (input === "trending_now") {
+        config.sortBy = "totalViews";
+    } else if (input && input.indexOf("/the-loai/") === 0) {
+        config.category = input.split("/").pop();
+    }
+
+    var data = fetchBookList(config, page);
     if (!data || !data.data) return Response.success([], null);
 
     var books = [];
@@ -11,9 +21,5 @@ function execute(input, page) {
         books.push(toBookItem(data.data[i]));
     }
 
-    var currentPage = parseInt(data.page || page || "1", 10);
-    if (!currentPage || currentPage < 1) currentPage = 1;
-    var next = currentPage < (data.totalPages || 0) ? String(currentPage + 1) : null;
-
-    return Response.success(books, next);
+    return Response.success(books, nextPageToken(data, currentPage));
 }
