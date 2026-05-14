@@ -1,0 +1,25 @@
+{
+    "metadata": {
+        "name": "itruyenchu_org",
+        "author": "Raiden",
+        "version": 1,
+        "source": "https://itruyenchu.org",
+        "regexp": "(www\\.)?itruyenchu\\.org/truyen/[^/?#]+(?:/chuong-\\d+)?",
+        "description": "itruyenchu.org vietnamese novel",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "novel"
+    },
+    "script": {
+        "home": "home.js",
+        "genre": "genre.js",
+        "detail": "detail.js",
+        "toc": "toc.js",
+        "chap": "chap.js",
+        "search": "search.js"
+    },
+    "config": {
+        "thread_num": 1,
+        "delay": 2000
+    }
+}
