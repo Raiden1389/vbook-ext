@@ -1,5 +1,3 @@
-load("config.js");
-
 function execute() {
     return Response.success([
         { title: "Tiên Hiệp", input: "/the-loai/tien-hiep", script: "gen.js" },
