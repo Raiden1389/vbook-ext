@@ -1,69 +1,65 @@
-load("config.js");
+load('config.js');
 
 function execute(url) {
     url = normalizeUrl(url);
-    var slug = getSlug(url);
-    var doc = fetchDocument(url);
-    if (!doc) {
-        return Response.success({
-            name: "",
-            cover: "",
-            author: "",
-            description: "",
-            detail: "",
-            host: BASE_URL
+    let slug = getSlug(url);
+    let book = fetchJson(API_URL + "/books/" + encodeURIComponent(slug));
+    let doc = fetchDocument(bookUrl(slug));
+    if (!doc && !book) return null;
+
+    let schema = doc ? parseBookSchema(doc) : null;
+    let title = book && book.title ? book.title : (schema && schema.name ? schema.name : cleanText(doc.select("h1").first().text()));
+    let author = book && book.tacGia ? book.tacGia : "";
+    if (!author && schema && schema.author && schema.author.name) author = schema.author.name;
+    if (!author && doc) author = cleanText(doc.select("h2:contains(Tác giả), h1 + h2, h1 ~ h2").first().text());
+
+    let cover = book && book.bannerURL ? book.bannerURL : (schema && schema.image ? schema.image : "");
+    if (!cover && doc) {
+        let img = doc.select("picture img, img[alt*='book cover'], img[src*='/book-cover/']").first();
+        cover = img ? absoluteAsset(img.attr("src")) : fullCoverUrl(slug);
+    }
+
+    let description = "";
+    if (book && book.description) description = responseContent(book.description);
+    if (!description && schema && schema.description) description = "<p>" + schema.description + "</p>";
+    let intro = doc ? doc.select("article p, .space-y-2 p") : null;
+    if (intro && intro.size() > 0) {
+        let parts = [];
+        intro.forEach(function (p) {
+            let text = cleanText(p.text());
+            if (text) parts.push("<p>" + text + "</p>");
+        });
+        if (parts.length) description = parts.join("");
+    }
+
+    let total = book && book.currentChapter ? parseInt(book.currentChapter) : (doc ? parseTotalChapters(doc, schema) : 0);
+    let genres = [];
+    if (book && book.categories) {
+        book.categories.forEach(function (cat) {
+            genres.push({ title: cat, input: "/the-loai/" + cat, script: "gen.js" });
+        });
+    } else if (doc) {
+        doc.select("a[href^='/the-loai/']").forEach(function (e) {
+            let title = cleanText(e.text());
+            let href = e.attr("href");
+            if (title && href) genres.push({ title: title, input: href, script: "gen.js" });
         });
     }
 
-    var jsonLd = extractJsonLd(doc) || {};
-    var name = cleanText(doc.select("h1").text()) || jsonLd.name || "";
-    var cover = doc.select("meta[property=og:image]").attr("content") || jsonLd.image || coverUrl(slug);
-    var author = "";
-    if (jsonLd.author && jsonLd.author.name) author = jsonLd.author.name;
-
-    var description = jsonLd.description || "";
-    description = responseContent(description) || "";
-    var intro = doc.select("article p, .space-y-2 p, .h-72 p");
-    if (intro && intro.size() > 0) {
-        var parts = [];
-        for (var k = 0; k < intro.size(); k++) {
-            var text = cleanText(intro.get(k).text());
-            if (text) parts.push("<p>" + text + "</p>");
-        }
-        if (parts.length > 0) description = parts.join("");
-    }
-
-    var tags = [];
-    if (jsonLd.genre && jsonLd.genre.length) {
-        for (var i = 0; i < jsonLd.genre.length; i++) {
-            if (jsonLd.genre[i]) tags.push(jsonLd.genre[i]);
-        }
-    } else {
-        var tagEls = doc.select("a[href*='/the-loai/']");
-        for (var j = 0; j < tagEls.size(); j++) {
-            var tagName = tagEls.get(j).text();
-            if (tagName) tags.push(tagName);
-        }
-    }
-
-    var detail = "";
-    if (tags.length) detail += tags.join("<br>");
-    var total = parseTotalChapters(doc, jsonLd);
-    if (total) {
-        detail += (detail ? "<br>" : "") + "Số chương: " + total;
-    }
-    if (jsonLd.dateModified) {
-        detail += (detail ? "<br>" : "") + "Cập nhật: " + jsonLd.dateModified;
-    }
+    let detail = [];
+    if (author) detail.push("<b>Tác giả:</b> " + author);
+    if (total) detail.push("<b>Số chương:</b> " + total);
+    if (book && book.updatedAt) detail.push("<b>Cập nhật:</b> " + book.updatedAt.substring(0, 10));
+    else if (schema && schema.dateModified) detail.push("<b>Cập nhật:</b> " + schema.dateModified.substring(0, 10));
 
     return Response.success({
-        name: name,
+        name: title,
         cover: cover,
         author: author,
         description: description,
-        detail: detail,
+        detail: detail.join("<br>"),
         host: BASE_URL,
-        url: url,
+        genres: genres,
         ongoing: true
     });
 }
