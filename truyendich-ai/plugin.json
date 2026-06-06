@@ -2,7 +2,7 @@
     "metadata": {
         "name": "truyendich_ai",
         "author": "Raiden",
-        "version": 2,
+        "version": 3,
         "source": "https://truyendich.ai",
         "regexp": "(www\\.)?truyendich\\.ai/doc-truyen/(?:ai/|cv/)?[^/?#]+(?:/chuong-\\d+)?",
         "description": "truyendich.ai vietnamese novel",

@@ -30,7 +30,7 @@
             "name": "truyendich_ai",
             "author": "Raiden",
             "path": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/truyendich-ai/plugin.zip",
-            "version": 2,
+            "version": 3,
             "source": "https://truyendich.ai",
             "icon": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/truyendich-ai/icon.png",
             "description": "truyendich.ai Vietnamese novel",

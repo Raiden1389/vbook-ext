@@ -1,5 +1,11 @@
 load("config.js");
 
+function fetchText(url) {
+    let response = fetch(normalizeUrl(url));
+    if (!response.ok) return "";
+    return response.text();
+}
+
 function openWithBrowser(url) {
     var browser = Engine.newBrowser();
     try {
@@ -17,6 +23,31 @@ function looksLikeChallenge(doc) {
     if (html.indexOf("Checking your browser") !== -1) return true;
     if (html.indexOf("Just a moment") !== -1) return true;
     return false;
+}
+
+function decodeJsonString(text) {
+    try {
+        return JSON.parse('"' + text + '"');
+    } catch (e) {
+        return "";
+    }
+}
+
+function extractFromNextFlight(raw) {
+    if (!raw) return "";
+    let match = raw.match(/1c:T[0-9A-Fa-f]+,\"]\)<\/script><script>self\.__next_f\.push\(\[1,\"([\s\S]*?)\"\]\)<\/script>/);
+    if (!match || !match[1]) return "";
+
+    let text = decodeJsonString(match[1]);
+    if (!cleanText(text)) return "";
+
+    let parts = text.split(/\n+/);
+    let html = [];
+    for (let i = 0; i < parts.length; i++) {
+        let line = cleanText(parts[i]);
+        if (line) html.push("<p>" + escapeHtml(line) + "</p>");
+    }
+    return html.join("");
 }
 
 function extractHtmlContent(doc) {
@@ -37,8 +68,12 @@ function extractHtmlContent(doc) {
 }
 
 function execute(url) {
+    let raw = fetchText(url);
+    let content = extractFromNextFlight(raw);
+    if (cleanText(content)) return Response.success(content);
+
     let doc = fetchDocument(url);
-    let content = extractHtmlContent(doc);
+    content = extractHtmlContent(doc);
     if (!cleanText(content) || looksLikeChallenge(doc)) {
         doc = openWithBrowser(url);
         content = extractHtmlContent(doc);
