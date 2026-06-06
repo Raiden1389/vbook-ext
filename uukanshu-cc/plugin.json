@@ -5,7 +5,7 @@
         "version": 15,
         "source": "https://www.uukanshu.cc",
         "regexp": "(www\\.)?uukanshu\\.cc/book/\\d+",
-        "description": "đọc truyên",
+        "description": "uukanshu.cc chinese novel",
         "locale": "zh_CN",
         "language": "javascript",
         "type": "chinese_novel"
