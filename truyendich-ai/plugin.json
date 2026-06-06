@@ -1,0 +1,25 @@
+{
+    "metadata": {
+        "name": "truyendich_ai",
+        "author": "Raiden",
+        "version": 1,
+        "source": "https://truyendich.ai",
+        "regexp": "(www\\.)?truyendich\\.ai/doc-truyen/(?:ai/|cv/)?[^/?#]+(?:/chuong-\\d+)?",
+        "description": "truyendich.ai vietnamese novel",
+        "locale": "vi_VN",
+        "language": "javascript",
+        "type": "novel"
+    },
+    "script": {
+        "home": "home.js",
+        "genre": "genre.js",
+        "detail": "detail.js",
+        "toc": "toc.js",
+        "chap": "chap.js",
+        "search": "search.js"
+    },
+    "config": {
+        "thread_num": 1,
+        "delay": 1500
+    }
+}
