@@ -1,0 +1,19 @@
+{
+    "metadata": {
+        "author": "Raiden",
+        "description": "Raiden VBook Extensions - TruyenDich.AI"
+    },
+    "data": [
+        {
+            "name": "truyendich_ai",
+            "author": "Raiden",
+            "path": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/truyendich-ai/plugin.zip",
+            "version": 1,
+            "source": "https://truyendich.ai",
+            "icon": "https://raw.githubusercontent.com/Raiden1389/vbook-ext/master/truyendich-ai/icon.png",
+            "description": "truyendich.ai Vietnamese novel",
+            "type": "novel",
+            "locale": "vi_VN"
+        }
+    ]
+}
